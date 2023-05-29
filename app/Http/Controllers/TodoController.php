@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateTodoRequest;
+use App\Http\Requests\UpdateTodoRequest;
+use App\Http\Resources\Todo as TodoCollection;
+use App\Models\Todo;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
@@ -11,6 +15,7 @@ class TodoController extends Controller
      */
     public function index()
     {
+        return new TodoCollection(Todo::paginate(20));
 
     }
 
@@ -25,17 +30,24 @@ class TodoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateTodoRequest $request)
     {
-        //
+        $todo = new Todo;
+        $todo->fill($request->validated());
+        $todo->save();
+
+        return response()->json([
+            'message' => 'Todo created successfully',
+            'data'    => $todo,
+        ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Todo $todo)
     {
-        //
+        return response()->json($todo);
     }
 
     /**
@@ -49,16 +61,23 @@ class TodoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTodoRequest $request, Todo $todo)
     {
-        //
+        $todo->fill($request->validated())->save();
+
+        return response()->json([
+            'message' => 'Todo updated successfully',
+            'data'    => $todo,
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Todo $todo)
     {
-        //
+        $todo->delete();
+
+        return response()->json(null, 204);
     }
 }

@@ -21,7 +21,6 @@ class TodoFactory extends Factory
         return [
             'name'      => $this->faker->sentence(3),
             'completed' => $this->faker->boolean(),
-            'user_id'   => 1,
         ];
     }
 }
